@@ -32,7 +32,6 @@ export default function PropertyCard({ property }: PropertyCardProps) {
             width={400}
             height={250}
             className="w-full h-48 object-cover"
-            data-ai-hint="apartment exterior"
           />
           <Badge className="absolute top-2 left-2" variant="secondary">{property.propertyType}</Badge>
           <Button

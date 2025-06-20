@@ -19,7 +19,7 @@ export function UserNav() {
   const user = {
     name: 'John Doe',
     email: 'john.doe@example.com',
-    image: 'https://placehold.co/40x40',
+    image: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg',
     role: 'user', // or 'landlord'
   };
 

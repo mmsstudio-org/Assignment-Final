@@ -51,7 +51,6 @@ export default function DashboardPage() {
                       height="64"
                       src={property.images[0]}
                       width="64"
-                      data-ai-hint="apartment exterior"
                     />
                   </TableCell>
                   <TableCell className="font-medium">{property.title}</TableCell>
