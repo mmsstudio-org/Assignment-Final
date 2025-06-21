@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const MONGODB_URI = process.env.MONGODB_URI;
+const MONGODB_URI = process.env.MONGODB_URI?.trim();
 
 if (!MONGODB_URI || MONGODB_URI === 'your_mongodb_connection_string') {
   const errorMessage = `
@@ -30,7 +30,27 @@ if (!MONGODB_URI || MONGODB_URI === 'your_mongodb_connection_string') {
   throw new Error(errorMessage);
 }
 
-if (!MONGODB_URI.startsWith('mongodb://') && !MONGODB_URI.startsWith('mongodb+srv://')) {
+if (MONGODB_URI.includes('<password>')) {
+    const errorMessage = `
+  
+  ##########################################################################################
+  #                                                                                        #
+  #   ❌ INCOMPLETE CONNECTION STRING: PASSWORD MISSING                                    #
+  #                                                                                        #
+  #   Your MONGODB_URI in .env.local still contains the "<password>" placeholder.          #
+  #                                                                                        #
+  #   👇 FIX: Edit your .env.local file and replace "<password>" with the actual           #
+  #   password for your database user.                                                     #
+  #                                                                                        #
+  ##########################################################################################
+
+  `;
+  
+  throw new Error(errorMessage);
+}
+
+
+if (!MONGODB_URI.startsWith('mongodb+srv://')) {
     const errorMessage = `
   
   ##########################################################################################
@@ -38,7 +58,7 @@ if (!MONGODB_URI.startsWith('mongodb://') && !MONGODB_URI.startsWith('mongodb+sr
   #   ❌ INVALID DATABASE CONNECTION STRING                                                #
   #                                                                                        #
   #   The MONGODB_URI in your .env.local file has an invalid format.                         #
-  #   It MUST start with "mongodb://" or "mongodb+srv://".                                   #
+  #   It MUST start with "mongodb+srv://".                                                   #
   #                                                                                        #
   #   Please check your .env.local file and ensure the value you copied from MongoDB Atlas   #
   #   is correct and complete.                                                             #
