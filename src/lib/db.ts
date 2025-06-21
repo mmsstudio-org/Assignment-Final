@@ -30,16 +30,17 @@ if (!MONGODB_URI || MONGODB_URI === 'your_mongodb_connection_string') {
   throw new Error(errorMessage);
 }
 
-if (MONGODB_URI.includes('<password>')) {
+if (MONGODB_URI.includes('<password>') || MONGODB_URI.includes('<db_password>')) {
     const errorMessage = `
   
   ##########################################################################################
   #                                                                                        #
   #   ❌ INCOMPLETE CONNECTION STRING: PASSWORD MISSING                                    #
   #                                                                                        #
-  #   Your MONGODB_URI in .env.local still contains the "<password>" placeholder.          #
+  #   Your MONGODB_URI in .env.local still contains a "<password>" or "<db_password>"        #
+  #   placeholder.                                                                         #
   #                                                                                        #
-  #   👇 FIX: Edit your .env.local file and replace "<password>" with the actual           #
+  #   👇 FIX: Edit your .env.local file and replace the placeholder with the actual        #
   #   password for your database user.                                                     #
   #                                                                                        #
   ##########################################################################################
@@ -51,6 +52,10 @@ if (MONGODB_URI.includes('<password>')) {
 
 
 if (!MONGODB_URI.startsWith('mongodb+srv://')) {
+    const displayUri = MONGODB_URI.length > 30 
+      ? `${MONGODB_URI.substring(0, 15)}...${MONGODB_URI.substring(MONGODB_URI.length - 15)}` 
+      : MONGODB_URI;
+
     const errorMessage = `
   
   ##########################################################################################
@@ -60,8 +65,14 @@ if (!MONGODB_URI.startsWith('mongodb+srv://')) {
   #   The MONGODB_URI in your .env.local file has an invalid format.                         #
   #   It MUST start with "mongodb+srv://".                                                   #
   #                                                                                        #
-  #   Please check your .env.local file and ensure the value you copied from MongoDB Atlas   #
-  #   is correct and complete.                                                             #
+  #   The application is currently reading this (redacted) value:                          #
+  #   "${displayUri}"                                                                      #
+  #                                                                                        #
+  #   EXAMPLE OF A CORRECT STRING:                                                         #
+  #   mongodb+srv://your_user:your_password@yourcluster.xxxxx.mongodb.net/your_db?retryWrites=true...
+  #                                                                                        #
+  #   Please go to MongoDB Atlas, get the full connection string again, and carefully        #
+  #   paste it into your .env.local file.                                                    #
   #                                                                                        #
   ##########################################################################################
 

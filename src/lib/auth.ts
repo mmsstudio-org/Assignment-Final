@@ -15,6 +15,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   adapter: MongoDBAdapter(clientPromise),
   session: { strategy: 'jwt' },
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     Google({
       clientId: process.env.AUTH_GOOGLE_ID,
