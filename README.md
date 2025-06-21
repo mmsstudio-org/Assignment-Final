@@ -1,3 +1,13 @@
+> [!IMPORTANT]
+> **Required Setup: Connect Your Database**
+> This application requires a connection to a MongoDB database to run. You must create a `.env.local` file with your database connection string.
+>
+> 1.  **Create a `.env.local` file** in the root of your project.
+> 2.  **Copy the contents** from the `.env.example` file into your new `.env.local` file.
+> 3.  **Fill in the `MONGODB_URI` and `NEXTAUTH_SECRET`** values in `.env.local`.
+>
+> Your app will not start until this is done. This is a one-time setup.
+
 # RentNest – House & Apartment Rentals
 
 Welcome to RentNest, a modern, full-stack property rental web application. This platform allows users to browse, filter, and save property listings, while providing landlords with a dedicated dashboard to manage their properties.

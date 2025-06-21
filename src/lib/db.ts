@@ -3,24 +3,25 @@ import mongoose from 'mongoose';
 const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI || MONGODB_URI === 'your_mongodb_connection_string') {
-  let errorMessage = `
+  const errorMessage = `
   
   ##########################################################################################
   #                                                                                        #
-  #  👋 HELLO! DATABASE NOT CONNECTED.                                                     #
+  #   👋 CRITICAL: DATABASE IS NOT CONFIGURED.                                             #
   #                                                                                        #
-  #  Your app is crashing because it needs a database connection string.                   #
-  #  This is a required manual step. I can't do it for you because it contains secrets.    #
+  #   This is the final, required manual setup step.                                       #
+  #   Your app cannot run without a database connection string.                            #
   #                                                                                        #
-  #  👇 HERE IS HOW TO FIX IT (in 3 simple steps):                                         #
+  #   👇 FOLLOW THESE STEPS TO FIX THIS:                                                   #
   #                                                                                        #
-  #  1. Create a new file in your project's root folder named: .env.local                  #
+  #   1. In the file explorer, create a new file in the root folder:                       #
+  #      -> .env.local                                                                     #
   #                                                                                        #
-  #  2. Copy the contents of the .env.example file into your new .env.local file.          #
+  #   2. Copy the contents of .env.example into your new .env.local file.                  #
   #                                                                                        #
-  #  3. In .env.local, fill in your MONGODB_URI and AUTH_SECRET.                           #
+  #   3. In .env.local, fill in your MONGODB_URI and a secret for NEXTAUTH_SECRET.         #
   #                                                                                        #
-  #  Then, restart the server. That's it!                                                  #
+  #   4. Restart the server for the changes to take effect. That's it!                     #
   #                                                                                        #
   ##########################################################################################
 
