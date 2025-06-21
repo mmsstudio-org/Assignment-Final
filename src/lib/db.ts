@@ -30,6 +30,26 @@ if (!MONGODB_URI || MONGODB_URI === 'your_mongodb_connection_string') {
   throw new Error(errorMessage);
 }
 
+if (!MONGODB_URI.startsWith('mongodb://') && !MONGODB_URI.startsWith('mongodb+srv://')) {
+    const errorMessage = `
+  
+  ##########################################################################################
+  #                                                                                        #
+  #   ❌ INVALID DATABASE CONNECTION STRING                                                #
+  #                                                                                        #
+  #   The MONGODB_URI in your .env.local file has an invalid format.                         #
+  #   It MUST start with "mongodb://" or "mongodb+srv://".                                   #
+  #                                                                                        #
+  #   Please check your .env.local file and ensure the value you copied from MongoDB Atlas   #
+  #   is correct and complete.                                                             #
+  #                                                                                        #
+  ##########################################################################################
+
+  `;
+  
+  throw new Error(errorMessage);
+}
+
 
 /**
  * Global is used here to maintain a cached connection across hot reloads
