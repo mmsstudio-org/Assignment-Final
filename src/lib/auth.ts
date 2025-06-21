@@ -1,21 +1,21 @@
 import NextAuth from 'next-auth';
-import { MongoDBAdapter } from '@auth/mongodb-adapter';
+// import { MongoDBAdapter } from '@auth/mongodb-adapter'; // Disabled DB
 import Google from 'next-auth/providers/google';
 import Credentials from 'next-auth/providers/credentials';
-import bcrypt from 'bcryptjs';
+// import bcrypt from 'bcryptjs'; // Disabled DB
 
 import { authConfig } from '@/auth.config';
-import { clientPromise } from '@/lib/db';
-import User from '@/models/user.model';
-import dbConnect from './db';
+// import { clientPromise } from '@/lib/db'; // Disabled DB
+// import User from '@/models/user.model'; // Disabled DB
+// import dbConnect from './db'; // Disabled DB
 import type { User as UserType } from './types';
 
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
-  adapter: MongoDBAdapter(clientPromise),
+  // adapter: MongoDBAdapter(clientPromise), // Disabled DB
   session: { strategy: 'jwt' },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET || 'fallback-secret-for-dev',
   providers: [
     Google({
       clientId: process.env.AUTH_GOOGLE_ID,
@@ -25,24 +25,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       async authorize(credentials) {
         if (!credentials?.email || !credentials.password) return null;
         
-        await dbConnect();
-        
-        const user = await User.findOne({ email: credentials.email as string });
-        
-        if (!user || !user.password) {
-          return null;
-        }
+        console.log("Mock authentication successful for:", credentials.email);
 
-        const isPasswordCorrect = await bcrypt.compare(
-          credentials.password as string,
-          user.password
-        );
+        // This is a mock user. It will successfully "log in" any user.
+        // You can test the landlord dashboard by changing role to 'landlord'.
+        const mockUser = {
+            id: 'mock-user-123',
+            name: 'Test User',
+            email: credentials.email as string,
+            role: 'landlord', // Change to 'user' or 'landlord' to test different roles
+            image: ''
+        };
 
-        if (isPasswordCorrect) {
-          return user;
-        }
-
-        return null;
+        return mockUser;
       },
     }),
   ],

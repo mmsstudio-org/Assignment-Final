@@ -1,5 +1,9 @@
 import mongoose from 'mongoose';
 
+// The entire content of this file is commented out to disable MongoDB connection.
+// The user can re-enable this later by uncommenting the code and removing the mock exports below.
+
+/*
 const MONGODB_URI = process.env.MONGODB_URI?.trim();
 
 if (!MONGODB_URI || MONGODB_URI === 'your_mongodb_connection_string') {
@@ -51,7 +55,7 @@ if (MONGODB_URI.includes('<password>') || MONGODB_URI.includes('<db_password>'))
 }
 
 
-if (!MONGODB_URI.startsWith('mongodb+srv://')) {
+if (!MONGODB_URI.startsWith('mongodb+srv://') && !MONGODB_URI.startsWith('mongodb://')) {
     const displayUri = MONGODB_URI.length > 30 
       ? `${MONGODB_URI.substring(0, 15)}...${MONGODB_URI.substring(MONGODB_URI.length - 15)}` 
       : MONGODB_URI;
@@ -82,11 +86,6 @@ if (!MONGODB_URI.startsWith('mongodb+srv://')) {
 }
 
 
-/**
- * Global is used here to maintain a cached connection across hot reloads
- * in development. This prevents connections from growing exponentially
- * during API Route usage.
- */
 let cached = (global as any).mongoose;
 
 if (!cached) {
@@ -111,8 +110,16 @@ async function dbConnect() {
   return cached.conn;
 }
 
-export default dbConnect;
-
 // For NextAuth adapter
 const clientPromise = mongoose.connect(MONGODB_URI!).then(m => m.connection.getClient());
-export { clientPromise };
+*/
+
+
+// Mock implementation to avoid breaking imports
+export default async function dbConnect() {
+  console.log("Database connection is disabled.");
+  return Promise.resolve();
+}
+
+// Mock clientPromise for NextAuth adapter placeholder
+export const clientPromise = Promise.resolve({} as any);

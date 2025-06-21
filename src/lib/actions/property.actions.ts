@@ -1,120 +1,58 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import dbConnect from '../db';
-import Property from '@/models/property.model';
-import User from '@/models/user.model';
-import { auth } from '../auth';
+// import dbConnect from '../db';
+// import Property from '@/models/property.model';
+// import User from '@/models/user.model';
+// import { auth } from '../auth';
 import type { Property as PropertyType } from '../types';
 
 function toPlainObject(doc: any) {
   return JSON.parse(JSON.stringify(doc));
 }
 
+// --- MOCKED FUNCTIONS ---
+
 export async function createProperty(propertyData: any) {
-  const session = await auth();
-  if (!session?.user?.id || session.user.role !== 'landlord') {
-    throw new Error('Not authorized');
-  }
-
-  await dbConnect();
-
-  const newProperty = new Property({
-    ...propertyData,
-    landlordId: session.user.id,
-  });
-
-  await newProperty.save();
-
+  console.log('Mock Action: createProperty called with:', propertyData);
+  // Revalidate paths to refresh UI, but don't hit DB
   revalidatePath('/dashboard');
   revalidatePath('/');
 }
 
 export async function getProperties(filters: { city: string, propertyType: string, priceRange: [number, number] }) {
-  await dbConnect();
-  
-  const query: any = {};
-  if (filters.city && filters.city !== 'all') {
-    query.city = filters.city;
-  }
-  if (filters.propertyType && filters.propertyType !== 'all') {
-    query.propertyType = filters.propertyType;
-  }
-  query.price = { $gte: filters.priceRange[0], $lte: filters.priceRange[1] };
-
-
-  const properties = await Property.find(query).sort({ createdAt: -1 });
-  return toPlainObject(properties);
+  console.log('Mock Action: getProperties called with filters:', filters);
+  // Return an empty array to show the "No properties" state on the homepage
+  return [];
 }
 
 
 export async function getPropertyById(id: string) {
-  try {
-    await dbConnect();
-    const property = await Property.findById(id);
-    if (!property) return null;
-    return toPlainObject(property);
-  } catch (error) {
-    // Invalid ID format
-    return null;
-  }
+  console.log('Mock Action: getPropertyById called with id:', id);
+  // Return null to trigger the notFound() page for listings
+  return null;
 }
 
 export async function getLandlordProperties(landlordId: string) {
-  await dbConnect();
-  const properties = await Property.find({ landlordId }).sort({ createdAt: -1 });
-  return toPlainObject(properties);
+  console.log('Mock Action: getLandlordProperties called for landlord:', landlordId);
+  // Return an empty array for the dashboard
+  return [];
 }
 
 export async function getSimilarListings(currentProperty: PropertyType) {
-  await dbConnect();
-  const similar = await Property.find({
-    $and: [
-      { _id: { $ne: currentProperty._id } },
-      { 
-        $or: [
-          { city: currentProperty.city },
-          { propertyType: currentProperty.propertyType }
-        ]
-      }
-    ]
-  }).limit(4);
-  return toPlainObject(similar);
+  console.log('Mock Action: getSimilarListings called for property:', currentProperty._id);
+  return [];
 }
 
 export async function toggleFavorite(propertyId: string, userId: string) {
-  try {
-    await dbConnect();
-    const user = await User.findById(userId);
-
-    if (!user) {
-      return { error: 'User not found.' };
-    }
-
-    const isFavorited = user.favorites.includes(propertyId);
-
-    if (isFavorited) {
-      // Remove from favorites
-      user.favorites.pull(propertyId);
-    } else {
-      // Add to favorites
-      user.favorites.push(propertyId);
-    }
-
-    await user.save();
-    revalidatePath('/favorites');
-    revalidatePath(`/listing/${propertyId}`);
-
-    return { success: true, isFavorited: !isFavorited };
-  } catch (error) {
-    console.log(error);
-    return { error: 'Something went wrong.' };
-  }
+  console.log(`Mock Action: toggleFavorite called for property ${propertyId} and user ${userId}`);
+  revalidatePath('/favorites');
+  revalidatePath(`/listing/${propertyId}`);
+  // Pretend we successfully favorited it, but don't persist
+  return { success: true, isFavorited: true };
 }
 
 export async function getFavoriteProperties(userId: string) {
-  await dbConnect();
-  const user = await User.findById(userId).populate('favorites');
-  if (!user) return [];
-  return toPlainObject(user.favorites);
+  console.log('Mock Action: getFavoriteProperties called for user:', userId);
+  return [];
 }
