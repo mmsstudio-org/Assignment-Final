@@ -1,11 +1,16 @@
 import PropertyCard from './PropertyCard';
 import type { Property } from '@/lib/types';
+import { auth } from '@/lib/auth';
+import { getUserFavorites } from '@/lib/actions/user.actions';
 
 interface PropertyListProps {
   properties: Property[];
 }
 
-export default function PropertyList({ properties }: PropertyListProps) {
+export default async function PropertyList({ properties }: PropertyListProps) {
+  const session = await auth();
+  const favoriteIds = session?.user ? await getUserFavorites(session.user.id as string) : [];
+
   if (properties.length === 0) {
     return (
       <div className="text-center py-16">
@@ -18,7 +23,11 @@ export default function PropertyList({ properties }: PropertyListProps) {
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {properties.map(property => (
-        <PropertyCard key={property.id} property={property} />
+        <PropertyCard 
+          key={property._id} 
+          property={property} 
+          isInitialFavorited={favoriteIds.includes(property._id)}
+        />
       ))}
     </div>
   );

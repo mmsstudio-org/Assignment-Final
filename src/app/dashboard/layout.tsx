@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import { Building, Home, MessageSquare, PlusCircle, Settings } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Building, Home, MessageSquare, PlusCircle, Settings, Ban } from 'lucide-react';
 import { UserNav } from '@/components/auth/UserNav';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 export default function DashboardLayout({
   children,
@@ -28,26 +28,41 @@ export default function DashboardLayout({
                 My Properties
               </Link>
               <Link
-                className="flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary"
+                className="flex items-center gap-3 rounded-lg px-3 py-2 text-primary transition-all hover:text-primary"
                 href="/dashboard/add-property"
               >
                 <PlusCircle className="h-4 w-4" />
                 Add New Property
               </Link>
-              <Link
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-                href="#"
-              >
-                <MessageSquare className="h-4 w-4" />
-                Messages
-              </Link>
-               <Link
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-                href="#"
-              >
-                <Settings className="h-4 w-4" />
-                Settings
-              </Link>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all cursor-not-allowed opacity-50">
+                      <MessageSquare className="h-4 w-4" />
+                      Messages
+                      <Ban className="h-3 w-3 ml-auto" />
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Coming Soon!</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+
+               <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all cursor-not-allowed opacity-50">
+                      <Settings className="h-4 w-4" />
+                      Settings
+                       <Ban className="h-3 w-3 ml-auto" />
+                    </span>
+                  </TooltipTrigger>
+                   <TooltipContent>
+                    <p>Coming Soon!</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </nav>
           </div>
         </div>

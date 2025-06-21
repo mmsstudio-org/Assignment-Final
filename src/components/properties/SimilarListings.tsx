@@ -1,28 +1,19 @@
-import { properties } from '@/lib/data';
 import type { Property } from '@/lib/types';
-import PropertyCard from './PropertyCard';
+import PropertyList from './PropertyList';
 
 interface SimilarListingsProps {
-  currentProperty: Property;
+  similarProperties: Property[];
 }
 
-export default function SimilarListings({ currentProperty }: SimilarListingsProps) {
-  const similar = properties.filter(
-    p => (p.city === currentProperty.city || p.propertyType === currentProperty.propertyType) && p.id !== currentProperty.id
-  ).slice(0, 4);
-
-  if (similar.length === 0) {
+export default function SimilarListings({ similarProperties }: SimilarListingsProps) {
+  if (similarProperties.length === 0) {
     return null;
   }
 
   return (
     <div className="mt-12">
       <h2 className="text-2xl font-bold mb-4">Similar Listings</h2>
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {similar.map(property => (
-          <PropertyCard key={property.id} property={property} />
-        ))}
-      </div>
+      <PropertyList properties={similarProperties} />
     </div>
   );
 }

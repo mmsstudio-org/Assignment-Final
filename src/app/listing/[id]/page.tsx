@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { properties } from '@/lib/data';
+import { getPropertyById, getSimilarListings } from '@/lib/actions/property.actions';
 import PropertyImageGallery from '@/components/properties/PropertyImageGallery';
 import BookingCalendar from '@/components/properties/BookingCalendar';
 import SimilarListings from '@/components/properties/SimilarListings';
@@ -7,13 +7,18 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { MapPin, Bath, BedDouble, Building, CheckCircle, MessageSquare, Phone } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type { Property } from '@/lib/types';
+import { auth } from '@/lib/auth';
 
-export default function PropertyPage({ params }: { params: { id: string } }) {
-  const property = properties.find(p => p.id === params.id);
+export default async function PropertyPage({ params }: { params: { id: string } }) {
+  const property = await getPropertyById(params.id);
+  const session = await auth();
 
   if (!property) {
     notFound();
   }
+  
+  const similarListings = await getSimilarListings(property);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -82,7 +87,7 @@ export default function PropertyPage({ params }: { params: { id: string } }) {
       </div>
       
       {/* Similar Listings */}
-      <SimilarListings currentProperty={property} />
+      <SimilarListings similarProperties={similarListings} />
     </div>
   );
 }

@@ -1,22 +1,21 @@
-// This is a placeholder for the Mongoose Message model schema.
-// In a real application, you would define the schema here.
-//
-// import mongoose, { Schema, Document } from 'mongoose';
-//
-// export interface IMessage extends Document {
-//   propertyId: mongoose.Schema.Types.ObjectId;
-//   senderId: mongoose.Schema.Types.ObjectId;
-//   landlordId: mongoose.Schema.Types.ObjectId;
-//   message: string;
-//   createdAt: Date;
-// }
-//
-// const MessageSchema: Schema = new Schema({
-//   propertyId: { type: mongoose.Schema.Types.ObjectId, ref: 'Property', required: true },
-//   senderId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-//   landlordId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-//   message: { type: String, required: true },
-//   createdAt: { type: Date, default: Date.now },
-// });
-//
-// export default mongoose.models.Message || mongoose.model<IMessage>('Message', MessageSchema);
+import mongoose, { Schema, Document, models } from 'mongoose';
+
+export interface IMessage extends Document {
+  propertyId: mongoose.Schema.Types.ObjectId;
+  sender: mongoose.Schema.Types.ObjectId;
+  recipient: mongoose.Schema.Types.ObjectId;
+  body: string;
+  read: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const MessageSchema: Schema = new Schema({
+  propertyId: { type: mongoose.Schema.Types.ObjectId, ref: 'Property', required: true },
+  sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  recipient: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  body: { type: String, required: true },
+  read: { type: Boolean, default: false },
+}, { timestamps: true });
+
+export default models.Message || mongoose.model<IMessage>('Message', MessageSchema);

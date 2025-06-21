@@ -1,14 +1,11 @@
-'use client';
-
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { UserNav } from '@/components/auth/UserNav';
-import { Home, Building2 } from 'lucide-react';
+import { Building2 } from 'lucide-react';
+import { auth } from '@/lib/auth';
 
-export default function Header() {
-  // Mock authentication state. In a real app, this would come from a session provider.
-  const isAuthenticated = true;
+export default async function Header() {
+  const session = await auth();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -24,24 +21,15 @@ export default function Header() {
           <Link href="/favorites" className="transition-colors hover:text-foreground/80 text-foreground/60">
             Favorites
           </Link>
-          <Link href="/dashboard" className="transition-colors hover:text-foreground/80 text-foreground/60">
-            Dashboard
-          </Link>
+          {session?.user?.role === 'landlord' && (
+            <Link href="/dashboard" className="transition-colors hover:text-foreground/80 text-foreground/60">
+              Dashboard
+            </Link>
+          )}
         </nav>
         <div className="flex flex-1 items-center justify-end space-x-4">
           <ThemeToggle />
-          {isAuthenticated ? (
-            <UserNav />
-          ) : (
-            <div className="hidden space-x-2 md:block">
-              <Button asChild variant="ghost">
-                <Link href="/login">Login</Link>
-              </Button>
-              <Button asChild>
-                <Link href="/register">Sign Up</Link>
-              </Button>
-            </div>
-          )}
+          <UserNav />
         </div>
       </div>
     </header>

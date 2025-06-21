@@ -1,12 +1,22 @@
 import PropertyList from '@/components/properties/PropertyList';
-import { properties } from '@/lib/data';
+import { getFavoriteProperties } from '@/lib/actions/property.actions';
 import { Star } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { auth } from '@/lib/auth';
 
-export default function FavoritesPage() {
-  // Mock favorites - in a real app, this would be fetched for the logged-in user
-  const favoriteProperties = properties.slice(0, 3);
+export default async function FavoritesPage() {
+  const session = await auth();
+  if (!session?.user) {
+    // This should not happen due to middleware, but as a fallback
+    return (
+      <div className="container mx-auto px-4 py-8 text-center">
+        <h1 className="text-2xl font-bold">Please log in to see your favorites.</h1>
+      </div>
+    );
+  }
+
+  const favoriteProperties = await getFavoriteProperties(session.user.id as string);
 
   return (
     <div className="container mx-auto px-4 py-8">

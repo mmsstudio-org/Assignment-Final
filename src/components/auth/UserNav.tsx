@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useSession, signOut } from 'next-auth/react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,24 +13,38 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { LayoutDashboard, LogOut, Star } from 'lucide-react';
+import { LayoutDashboard, LogOut, Star, User } from 'lucide-react';
+import { Skeleton } from '../ui/skeleton';
 
 export function UserNav() {
-  // Mock user data. In a real app, this would come from a session provider.
-  const user = {
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    image: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg',
-    role: 'user', // or 'landlord'
-  };
+  const { data: session, status } = useSession();
+
+  if (status === 'loading') {
+    return <Skeleton className="h-9 w-9 rounded-full" />;
+  }
+
+  if (status === 'unauthenticated' || !session?.user) {
+    return (
+       <div className="hidden space-x-2 md:block">
+          <Button asChild variant="ghost">
+            <Link href="/login">Login</Link>
+          </Button>
+          <Button asChild>
+            <Link href="/register">Sign Up</Link>
+          </Button>
+        </div>
+    );
+  }
+
+  const { user } = session;
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-9 w-9">
-            <AvatarImage src={user.image} alt={user.name} />
-            <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+            {user.image && <AvatarImage src={user.image} alt={user.name ?? ''} />}
+            <AvatarFallback>{user.name?.charAt(0).toUpperCase() ?? <User/>}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
@@ -42,12 +57,14 @@ export function UserNav() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem asChild>
-            <Link href="/dashboard">
-              <LayoutDashboard className="mr-2 h-4 w-4" />
-              <span>Dashboard</span>
-            </Link>
-          </DropdownMenuItem>
+          {user.role === 'landlord' && (
+            <DropdownMenuItem asChild>
+              <Link href="/dashboard">
+                <LayoutDashboard className="mr-2 h-4 w-4" />
+                <span>Dashboard</span>
+              </Link>
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem asChild>
             <Link href="/favorites">
               <Star className="mr-2 h-4 w-4" />
@@ -56,7 +73,7 @@ export function UserNav() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={() => signOut()}>
           <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>
         </DropdownMenuItem>

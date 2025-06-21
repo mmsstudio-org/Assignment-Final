@@ -1,5 +1,5 @@
 export interface Property {
-  id: string;
+  _id: string;
   title: string;
   description: string;
   price: number;
@@ -8,12 +8,15 @@ export interface Property {
   propertyType: 'Apartment' | 'House' | 'Villa' | 'Studio' | 'Cottage';
   landlordId: string;
   amenities: string[];
+  createdAt: string;
 }
 
 export interface User {
-  id: string;
+  _id: string;
   name: string;
   email: string;
   image?: string;
   role: 'user' | 'landlord' | 'admin';
+  password?: string;
+  favorites: string[];
 }

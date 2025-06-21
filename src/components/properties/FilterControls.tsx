@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -8,30 +9,52 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Slider } from '@/components/ui/slider';
 import { Filter } from 'lucide-react';
 
-interface FilterControlsProps {
-  onFilterChange: (filters: {
-    city: string;
-    priceRange: [number, number];
-    propertyType: string;
-  }) => void;
-}
-
 const cities = ['Metropolis', 'Suburbia', 'Coastal City', 'Rivertown'];
 const propertyTypes = ['Apartment', 'House', 'Villa', 'Studio', 'Cottage'];
 const MAX_PRICE = 10000;
 
-export default function FilterControls({ onFilterChange }: FilterControlsProps) {
-  const [city, setCity] = useState('all');
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, MAX_PRICE]);
-  const [propertyType, setPropertyType] = useState('all');
+export default function FilterControls() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  
+  const [city, setCity] = useState(searchParams.get('city') || 'all');
+  const [priceRange, setPriceRange] = useState<[number, number]>([
+    Number(searchParams.get('minPrice')) || 0,
+    Number(searchParams.get('maxPrice')) || MAX_PRICE
+  ]);
+  const [propertyType, setPropertyType] = useState(searchParams.get('propertyType') || 'all');
 
   const handlePriceChange = (value: number[]) => {
     setPriceRange(value as [number, number]);
   };
   
   const handleApplyFilters = () => {
-    onFilterChange({ city, priceRange, propertyType });
+    const current = new URLSearchParams(Array.from(searchParams.entries()));
+
+    if (city === 'all') current.delete('city');
+    else current.set('city', city);
+    
+    if (propertyType === 'all') current.delete('propertyType');
+    else current.set('propertyType', propertyType);
+
+    current.set('minPrice', String(priceRange[0]));
+    if (priceRange[1] === MAX_PRICE) current.delete('maxPrice');
+    else current.set('maxPrice', String(priceRange[1]));
+
+    const search = current.toString();
+    const query = search ? `?${search}` : "";
+    router.push(`${pathname}${query}`);
   };
+
+  useEffect(() => {
+    setCity(searchParams.get('city') || 'all');
+    setPropertyType(searchParams.get('propertyType') || 'all');
+    setPriceRange([
+      Number(searchParams.get('minPrice')) || 0,
+      Number(searchParams.get('maxPrice')) || MAX_PRICE,
+    ]);
+  }, [searchParams]);
 
   return (
     <Card className="mb-8">
@@ -84,7 +107,7 @@ export default function FilterControls({ onFilterChange }: FilterControlsProps) 
               className="pt-2"
             />
           </div>
-          <div className="lg:col-start-4">
+          <div className="lg:col-start-4 flex items-end">
              <Button onClick={handleApplyFilters} className="w-full">Apply Filters</Button>
           </div>
         </div>

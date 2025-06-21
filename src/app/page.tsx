@@ -1,31 +1,27 @@
-'use client';
-
-import { useState } from 'react';
 import FilterControls from '@/components/properties/FilterControls';
 import PropertyList from '@/components/properties/PropertyList';
-import { properties as allProperties } from '@/lib/data';
-import type { Property } from '@/lib/types';
-import { Button } from '@/components/ui/button';
+import { getProperties } from '@/lib/actions/property.actions';
 
-export default function Home() {
-  const [filteredProperties, setFilteredProperties] = useState<Property[]>(allProperties);
-  const [view, setView] = useState('grid');
-
-  const handleFilterChange = (filters: { city: string; priceRange: [number, number]; propertyType: string }) => {
-    let tempProperties = allProperties;
-
-    if (filters.city && filters.city !== 'all') {
-      tempProperties = tempProperties.filter(p => p.city === filters.city);
-    }
-
-    if (filters.propertyType && filters.propertyType !== 'all') {
-      tempProperties = tempProperties.filter(p => p.propertyType === filters.propertyType);
-    }
-    
-    tempProperties = tempProperties.filter(p => p.price >= filters.priceRange[0] && p.price <= filters.priceRange[1]);
-
-    setFilteredProperties(tempProperties);
+interface HomeProps {
+  searchParams?: {
+    city?: string;
+    propertyType?: string;
+    minPrice?: string;
+    maxPrice?: string;
   };
+}
+
+export default async function Home({ searchParams }: HomeProps) {
+  const filters = {
+    city: searchParams?.city || 'all',
+    propertyType: searchParams?.propertyType || 'all',
+    priceRange: [
+      Number(searchParams?.minPrice) || 0,
+      Number(searchParams?.maxPrice) || 10000,
+    ] as [number, number],
+  };
+
+  const properties = await getProperties(filters);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -36,14 +32,13 @@ export default function Home() {
         </p>
       </section>
 
-      <FilterControls onFilterChange={handleFilterChange} />
+      <FilterControls />
       
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-2xl font-bold">Featured Properties</h2>
-        {/* View toggle could be added here */}
       </div>
 
-      <PropertyList properties={filteredProperties} />
+      <PropertyList properties={properties} />
     </div>
   );
 }
