@@ -2,9 +2,18 @@ import mongoose from 'mongoose';
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
-if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
+if (!MONGODB_URI || MONGODB_URI === 'your_mongodb_connection_string') {
+  let errorMessage = 'ERROR: MONGODB_URI environment variable is not configured.\n\n';
+  errorMessage += 'To fix this, please follow these steps:\n';
+  errorMessage += '1. In the root of your project, create a new file named `.env.local`.\n';
+  errorMessage += '2. Open the `.env.example` file and copy its content into your new `.env.local` file.\n';
+  errorMessage += '3. In `.env.local`, replace `"your_mongodb_connection_string"` with your actual MongoDB connection string.\n';
+  errorMessage += '4. You will also need to provide an `AUTH_SECRET`.\n';
+  errorMessage += '5. Restart your development server for the changes to take effect.';
+  
+  throw new Error(errorMessage);
 }
+
 
 /**
  * Global is used here to maintain a cached connection across hot reloads
